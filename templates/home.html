@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}" >
+    <script src="{{url_for('static', filename='home.js')}}"></script>
+</head>
+<body>
+    <div id="navbar-container">
+        <div id="navbar">
+            <div id="navbar-left-container">
+                <div id="image-logo">Logo</div>
+            </div>
+            <div id="navbar-middle-container">
+                <!-- <div id="feed-dropdown-container">
+                    <select name="feed-dropdown" id="feed-dropdown" class="selector">
+                        <option value="home">Home</option>
+                        <option value="popular">Popular</option>
+                    </select>
+                </div> -->
+                <div id="input">
+                    <input type="text" id="search-bar" placeholder="Search Reddit" class="selector">
+                </div>
+            </div>
+        
+            <div id="navbar-right-container">
+                <div id="login-button">
+                    <button id="login-button" class="selector">
+                        Login
+                    </button>
+                </div>
+                <div id="profile-dropdown-container">
+                    <button id="profile-dropdown" class="selector">
+                        Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="body-container">
+        <div id="feed-container">
+            feed
+        </div>
+    </div>
+</body>
+</html>
