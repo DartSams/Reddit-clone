@@ -1,15 +1,24 @@
 *{
     margin:0;
-    font-size: 17px;
+    font-size: var(--label-text-size);
 }
 
 :root{
     --navbar-background-color:#ffffff;
-    --body-background-color:#d9dbdc
+    --body-background-color:#d9dbdc;
+    --label-text-size:20px;
 }
 
-.selector{
-    border-radius: 10px;
+button{
+    padding:3px;
+    border-radius: 30px;
+    border: solid white;
+    color:white;
+    background-color: #0079D3;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    height:auto
 }
 
 body{
@@ -48,14 +57,44 @@ body{
 
 #navbar input{
     width:50vw;
+    font-size: var(--label-text-size);
 }
 
 #body-container #feed-container{
-    position: absolute;
+    position: fixed;
     top: 5%;
     width:15vw;
     height: 100vh;
-    /* background-color: red; */
     background-color: var(--navbar-background-color);
+    padding:20px;
 }
 
+#feed-container div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#feed-container div img{
+    width:42px;
+    height: auto;
+}
+
+#feed-container .feed-option:hover{
+    cursor: pointer;
+    background-color: var(--body-background-color);
+}
+
+#feed-container #feed-register-container{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 90px;
+    padding: 10px;
+    justify-content: space-evenly;
+    height: 15%;
+}
+
+#feed-container #feed-register-container p{
+    text-align: center;
+}
