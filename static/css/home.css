@@ -132,11 +132,11 @@ body{
     flex-direction: row;
     justify-content: center;
     /* align-items: center; */
-    position: relative;
+    /* position: relative; */
     margin-top: 5%;
     width: 100%;
     height: 10000px;
-    z-index: -1;
+    /* z-index: -1; */
     /* overflow-x: hidden; */
 }
 
@@ -170,9 +170,12 @@ body{
     width:100%;
 }
 
-#post-container #like-unlike img,#post-container #like-unlike img:hover{
+#post-container img{
     width:20px;
     height:auto;
+}
+
+#post-container #like-unlike img:hover,#post-container .post-selector{
     cursor: pointer;
 }
 
@@ -186,4 +189,26 @@ body{
 
 #post-container #post #post-body{
     padding:10px;
+}
+
+#post-container #post-footer{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    align-items: baseline;
+}
+
+#post-container #post-footer img:hover,#post-container #post-footer div:hover{
+    cursor: pointer;
+    background-color: var(--body-background-color);
+}
+
+#post-container #post-footer div{
+    width: 80px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
 }
