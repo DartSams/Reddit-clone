@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}" >
-    <script src="{{url_for('static', filename='home.js')}}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}" >
+    <script src="{{url_for('static', filename='js/home.js')}}" defer></script>
 </head>
 <body>
     <div id="navbar-container">
@@ -18,6 +18,7 @@
                 <div id="input">
                     <input type="text" id="search-bar" placeholder="Search Reddit" class="selector">
                 </div>
+                <button id="search-button">Search</button>
             </div>
         
             <div id="navbar-right-container">
@@ -38,18 +39,18 @@
     <div id="body-container">
         <div id="feed-container">
             <h4>Feeds</h4>
-            <div id="feed-home" class="feed-option">
+            <div id="feed-home" class="feed-option feed-selector">
                 <img src="static\assets\light-svg.svg" alt="">
                 <h2>Home</h2>
             </div>
-            <div id="feed-popular" class="feed-option">
+            <div id="feed-popular" class="feed-option feed-selector">
                 <img src="static\assets\light-svg.svg" alt="">
                 <h2>Popular</h2>
             </div>
 
             <div id="feed-register-container">
                 <p>Click below to join reddit.</p>
-                <button>Register</button>
+                <button id="register-button" class="feed-selector">Register</button>
             </div>
         </div>
 
