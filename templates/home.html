@@ -7,6 +7,7 @@
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}" >
     <script src="{{url_for('static', filename='js/home.js')}}" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 </head>
 <body>
     <div id="navbar-container">
@@ -55,9 +56,17 @@
         </div>
 
         <div id="post-container">
-            <div class="post-card-container">
+            <div id="create-post-container" class="post-sections">
+                <div>
+                    <button>Profile</button>
+                </div>
+                <div>
+                    <input type="text" placeholder="Create post" id="create-new-post">
+                </div>
+            </div>
+            <div class="post-card-container post-selections" value="0:Dartsams">
                 <div id="like-unlike">
-                    <div id="like-post" value="0"><img src="static\assets\like-light.png" alt=""></div>
+                    <div><img src="static\assets\like-light.png" alt="" id="like-post" value="0"></div>
                     <div>69</div>
                     <div><img src="static\assets\dislike-light.png" alt="" id="dislike-post" value="0"></div>
                 </div>
