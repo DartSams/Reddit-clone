@@ -27,16 +27,20 @@ body{
     width:100vw;
     height: 100vh;
     background-color: var(--body-background-color);
+    overflow-x: hidden;
+
 }
 
 #navbar-container{    
-    width: 100vw;
+    width: fit-content;
     height: 2%;
     position: fixed;
 }
 
 #navbar{
+    z-index: -1;
     display: flex;
+    width:100vw;
     height: 100%;
     padding:10px;
     background-color: var(--navbar-background-color);
@@ -49,6 +53,10 @@ body{
 #navbar-right-container,#navbar-left-container{
     display: flex;
     flex-direction: row;
+}
+
+#navbar-right-container{
+    margin-right: 3%;
 }
 
 #navbar button,#navbar select,#navbar input{
@@ -64,18 +72,19 @@ body{
 #body-container{
     display: flex;
     flex-direction: row;
-    /* width:100vw;
-    height: 100vh; */
+    /* width:100vw; */
+    /* height: 100vh; */
 }
 
 #body-container #feed-container{
-    position: relative;
-    margin-top: 3%;
-    top: 5%;
-    width:15vw;
+    position: fixed;
+    margin-top: 1%;
+    /* top: 5%; */
+    width:12vw;
     height: 100vh;
     background-color: var(--navbar-background-color);
     padding:20px;
+    z-index: -1;
 }
 
 #feed-container div{
@@ -115,8 +124,10 @@ body{
     /* align-items: center; */
     position: relative;
     margin-top: 5%;
-    width: 100vw;
-    height: auto;
+    width: 100%;
+    height: 10000px;
+    z-index: -1;
+    /* overflow-x: hidden; */
 }
 
 #post-container .post-card-container{
@@ -146,7 +157,7 @@ body{
 #post-container .post-card-container #post-header #post-header-left{
     display: flex;
     justify-content: space-evenly;
-    width:100%
+    width:100%;
 }
 
 #post-container #like-unlike img,#post-container #like-unlike img:hover{
