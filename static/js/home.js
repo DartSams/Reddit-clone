@@ -139,7 +139,7 @@ function createNewPost(text,user){
     // console.log(newPostDiv)
     
     createLikeUnlikeDiv(newPostDiv);
-    createPost(text,user);
+    createPost(newPostDiv,"adminTest",text,user,"3 hours ago");
     postContainer.append(newPostDiv)
 }
 
@@ -163,4 +163,45 @@ function createLikeUnlikeDiv(parentNode){
     parentNode.append(likeUnlikeDiv)
 }; //function to create like and unlike sidebar to a post
 
-function createPost(text,user)
+function createPost(parentNode,subreddit,text,user,postedAgo){
+    let postDiv = document.createElement("div");
+    postDiv.id = "post";
+    let postHeaderDiv = document.createElement("div");
+    postHeaderDiv.id = "post-header";
+
+    //Left
+    let postHeaderLeftDiv = document.createElement("div");
+    postHeaderLeftDiv.id = "post-header-left";
+    let postSubreddit = document.createElement("div");
+    postSubreddit.classList.add("post-selector");
+    postSubreddit.id = "subreddit"
+    postSubreddit.innerText = "r/" + subreddit
+    postSubreddit.value = subreddit
+    let postedByDiv = document.createElement("div");
+    postedByDiv.value = user;
+    postedByDiv.id = "posted-by"
+    postedByDiv.innerText = "posted by u/" + user;
+    let postedAgoDiv = document.createElement("div");
+    postedAgoDiv.id = "posted-time-ago";
+    postedAgoDiv.innerText = postedAgo
+
+    //Right
+    let postHeaderRightDiv = document.createElement("div");
+    postHeaderRightDiv.id = "post-header-right";
+    let joinSubredditButtonDiv = document.createElement("div");
+    joinSubredditButtonDiv.id = "join-subreddit";
+    joinSubredditButtonDiv.value = subreddit;
+    let joinSubredditButton = document.createElement("button");
+    joinSubredditButton.classList.add("post-selector");
+    joinSubredditButton.innerText = "Join"
+
+    postHeaderLeftDiv.append(postSubreddit)
+    postHeaderLeftDiv.append(postedByDiv)
+    postHeaderLeftDiv.append(postedAgoDiv)
+    joinSubredditButtonDiv.append(joinSubredditButton)
+    postHeaderRightDiv.append(joinSubredditButtonDiv)
+    postHeaderDiv.append(postHeaderLeftDiv)
+    postHeaderDiv.append(postHeaderRightDiv)
+    postDiv.append(postHeaderDiv)
+    parentNode.append(postDiv)
+}

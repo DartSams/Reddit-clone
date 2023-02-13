@@ -12,8 +12,8 @@ socketio = SocketIO(app)
 mongo_password = os.environ.get("mongo_password")
 mongodb_string = f"mongodb+srv://DartSams:{mongo_password}@personal-cluser-db.qavgfkq.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(mongodb_string)
-mydb = client["Personal_db"]
-post_table = mydb["Post"]
+mydb = client["Personal_db"] #database in cluster
+post_table = mydb["Post"] #table in database
 
 @app.route("/")
 def home():
