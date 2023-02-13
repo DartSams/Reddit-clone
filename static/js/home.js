@@ -42,17 +42,26 @@ registerButton.addEventListener("click",function(){
     console.log("Time to register.")
 });
 
-function getPostData(){
-    console.log("getting post data.")
-    let clickedPost = document.querySelector(".post-card-container")
-    console.log(clickedPost.getAttribute("value"))
-}
+let createPostButton = document.querySelector("#create-post");
+createPostButton.addEventListener("click",function(){
+    console.log("Creating Post.")
+    let newPostText = document.querySelector("#create-new-post").value;
+    socket.emit("create_post",{"post":0,"text":newPostText});
+    createNewPost(newPostText,"dartsams");
+})
+
 
 let postLink = document.querySelector("#post-body");
 postLink.addEventListener("click",function(){
     console.log("Going to post page.")
     getPostData()
 })
+
+function getPostData(){
+    console.log("getting post data.")
+    let clickedPost = document.querySelector(".post-card-container")
+    console.log(clickedPost.getAttribute("value"))
+}
 
 let likePostButton = document.querySelector("#like-post");
 likePostButton.addEventListener("click",function(){
@@ -121,3 +130,37 @@ postSaveButton.addEventListener("click",function(){
     } // when saving a post changes the image to a dark to show it has been saved 
     
 })
+
+function createNewPost(text,user){
+    let postContainer = document.querySelector("#post-container");
+    let newPostDiv = document.createElement("div");
+    newPostDiv.classList.add("post-card-container"); // adds a class to the div
+    newPostDiv.classList.add("post-selections");
+    // console.log(newPostDiv)
+    
+    createLikeUnlikeDiv(newPostDiv);
+    createPost(text,user);
+    postContainer.append(newPostDiv)
+}
+
+function createLikeUnlikeDiv(parentNode){
+    let likeUnlikeDiv = document.createElement("div");
+    likeUnlikeDiv.className = "like-unlike";
+    let likeButtonDiv = document.createElement("div");
+    let likeImage = document.createElement("img");
+    likeImage.src = "static/assets/like-light.png"
+    likeImage.id = "like-post"
+    let currentLikeAmount = document.createElement("div");
+    currentLikeAmount.innerText = 69;
+    let dislikeImage = document.createElement("img");
+    dislikeImage.src = "static/assets/dislike-light.png"
+    dislikeImage.id = "dislike-post"
+
+    likeButtonDiv.append(likeImage)
+    likeButtonDiv.append(currentLikeAmount)
+    likeButtonDiv.append(dislikeImage)
+    likeUnlikeDiv.append(likeButtonDiv)
+    parentNode.append(likeUnlikeDiv)
+}; //function to create like and unlike sidebar to a post
+
+function createPost(text,user)
