@@ -39,6 +39,7 @@ body{
     width: fit-content;
     height: 2%;
     position: fixed;
+    z-index: 2;
 }
 
 #navbar{
@@ -82,7 +83,7 @@ body{
 #body-container{
     display: flex;
     flex-direction: row;
-    z-index: 8;
+    /* z-index: -8; */
 }
 
 #body-container #feed-container{
