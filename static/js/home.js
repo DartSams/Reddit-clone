@@ -1,10 +1,10 @@
-const socket = io();
+let socket = io();
 socket.on('connect', function() {
     console.log("socket connected")
     socket.emit('my event', {data: 'I\'m connected!'});
 });
 
-let logoButton = document.querySelector("#image-logo");
+logoButton = document.querySelector("#image-logo");
 logoButton.addEventListener("click",function(){
     console.log("Time to go home.")
 });
@@ -20,6 +20,7 @@ searchButton.addEventListener("click",function(){
 let loginButton = document.querySelector("#login-button");
 loginButton.addEventListener("click",function(){
     console.log("Time to login.")
+    openPopup()
 });
 
 let profileButton = document.querySelector("#profile-dropdown");
@@ -52,8 +53,11 @@ createPostButton.addEventListener("click",function(){
     let title = "first post test";
     let text = newPostText;
     let user = "dartsams";
-    let postedAgo = "now"
-    createNewPost(postNum,subreddit,title,text,user,postedAgo)
+    let postedAgo = "now";
+    let likes = 72;
+    createNewPost(postNum,subreddit,title,text,user,postedAgo,likes)
+    socket.emit("create_post",{"post":postNum,"subreddit":subreddit,"title":title,"text":text,"user":user,"postedAgo":postedAgo,"likes":likes});
+    document.querySelector("#create-new-post").value = "";
 })
 
 
@@ -66,8 +70,10 @@ createPostButton.addEventListener("click",function(){
 function getPostData(){
     console.log("getting post data.")
     let clickedPost = document.querySelector(".post-card-container")
-    console.log(clickedPost.getAttribute("value"))
+    console.log(clickedPost.getAttribute("id"))
 }
+
+
 
 // let likePostButton = document.querySelector("#like-post");
 // likePostButton.addEventListener("click",function(){
@@ -137,20 +143,21 @@ function getPostData(){
     
 // })
 
-function createNewPost(postNum,subreddit,title,text,user,postedAgo){
+function createNewPost(postNum,subreddit,title,text,user,postedAgo,likesNum=0){
     let postContainer = document.querySelector("#post-container");
     let newPostDiv = document.createElement("div");
     newPostDiv.classList.add("post-card-container"); // adds a class to the div
     newPostDiv.classList.add("post-selections");
+    newPostDiv.id = postNum
     // console.log(newPostDiv)
     
-    createLikeUnlikeDiv(newPostDiv,postNum);
-    createPost(newPostDiv,"adminTest","First post test",text,user,"3 hours ago");
-    socket.emit("create_post",{"post":postNum,"subreddit":subreddit,"title":title,"text":text,"user":user,"postedAgo":postedAgo});
-    postContainer.append(newPostDiv)
+    createLikeUnlikeDiv(newPostDiv,postNum,likesNum);
+    createPostDiv(newPostDiv,subreddit,title,text,user,postedAgo);
+    // socket.emit("create_post",{"post":postNum,"subreddit":subreddit,"title":title,"text":text,"user":user,"postedAgo":postedAgo});
+    postContainer.prepend(newPostDiv) //appends new post div to the top of the list
 }
 
-function createLikeUnlikeDiv(parentNode,postNum){
+function createLikeUnlikeDiv(parentNode,postNum,likesNum){
     let likeUnlikeDiv = document.createElement("div");
     likeUnlikeDiv.className = "like-unlike";
     let likeButtonDiv = document.createElement("div");
@@ -158,32 +165,39 @@ function createLikeUnlikeDiv(parentNode,postNum){
     likeImage.src = "static/assets/like-light.png";
     likeImage.id = "like-post";
     // likeButtonDiv.value = postNum
+    let currentLikeAmount = document.createElement("div");
+    currentLikeAmount.innerText = likesNum;
     likeImage.addEventListener("click",function(){
         // let postValue = likeButtonDiv.getAttribute("value")
         console.log("liking post.")
         // console.log(postNum)
+        let likeAmount = parseInt(currentLikeAmount.innerText)
         if (likeImage.src.includes("dark") === false) { // if the image src doesnt have dark in it then it will change that src to the dark image version
             likeImage.src = "static/assets/like-dark.png";
             dislikeImage.src = "static/assets/dislike-light.png"; //if dislike button is already switched on then user decides to like post instead this will switch dislike off
+            currentLikeAmount.innerText = likeAmount + 1; //increments the like amount for that post
         } else { // if the image src does have dark in it then it will change the src to the light image version
             likeImage.src = "static/assets/like-light.png";
+            currentLikeAmount.innerText = likeAmount - 1;//decrements the like amount for that post
         } // when liking a post changes the image to a dark to show it has been liked 
-        socket.emit("like_post",{"post":postNum,"posted_by":"Dartsams"})
+        socket.emit("like_post",{"post":postNum,"posted_by":"Dartsams"}) //emits a signal to backend saying post was liked to update in db
     })
-    let currentLikeAmount = document.createElement("div");
-    currentLikeAmount.innerText = 69;
     let dislikeImage = document.createElement("img");
-    dislikeImage.src = "static/assets/dislike-light.png"
-    dislikeImage.id = "dislike-post"
+    dislikeImage.src = "static/assets/dislike-light.png";
+    dislikeImage.id = "dislike-post";
     dislikeImage.addEventListener("click",function(){
         console.log("Disliking post.")
         console.log(postNum)
+        let likeAmount = parseInt(currentLikeAmount.innerText)
         if (dislikeImage.src.includes("dark") === false) { // if the image src doesnt have dark in it then it will change that src to the dark image version
             dislikeImage.src = "static/assets/dislike-dark.png";
             likeImage.src = "static/assets/like-light.png"; //if like button is already switched on then user decides to dislike post instead this will switch dislike on
+            currentLikeAmount.innerText = likeAmount - 1;
         } else { // if the image src does have dark in it then it will change the src to the light image version
             dislikeImage.src = "static/assets/dislike-light.png"; 
-        } // when dislike a post changes the image to a dark to show it has been disliked 
+            currentLikeAmount.innerText = likeAmount + 1;
+        } // when dislike a post changes the image to a dark to show it has been disliked
+        socket.emit("dislike_post",{"post":postNum,"posted_by":"Dartsams"}) //emits a signal to backend saying post was disliked to update in db 
     })
 
     likeButtonDiv.append(likeImage)
@@ -193,7 +207,7 @@ function createLikeUnlikeDiv(parentNode,postNum){
     parentNode.append(likeUnlikeDiv)
 }; //function to create like and unlike sidebar to a post
 
-function createPost(parentNode,subreddit,title,text,user,postedAgo){
+function createPostDiv(parentNode,subreddit,title,text,user,postedAgo){
     let postDiv = document.createElement("div");
     postDiv.id = "post";
     let postHeaderDiv = document.createElement("div");
@@ -312,4 +326,14 @@ function createPost(parentNode,subreddit,title,text,user,postedAgo){
     parentNode.append(postDiv)
 
     postDiv.append(postFooterDiv)
+}
+
+function openPopup () {
+    let popupContainer = document.getElementById("popup-container")
+    popupContainer.style.display = "flex"
+}
+
+function closePopup () {
+    let popupContainer = document.getElementById("popup-container")
+    popupContainer.style.display = "none"
 }

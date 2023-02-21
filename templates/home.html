@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <div id="post-container">
+        <div id="main-content-container">
             <div id="create-post-container" class="post-sections">
                 <div>
                     <button id="to-profile">Profile</button>
@@ -67,35 +67,66 @@
                     <button id="create-post">Create</button>
                 </div>
             </div>
-            <div class="post-card-container post-selections" value="0:Dartsams">
-                <div id="like-unlike">
-                    <div><img src="static\assets\like-light.png" alt="" id="like-post" value="0"></div>
-                    <div>69</div>
-                    <div><img src="static\assets\dislike-light.png" alt="" id="dislike-post" value="0"></div>
+            <div id="post-container">
+                <div class="post-card-container post-selections" value="0:Dartsams">
+                    <div id="like-unlike">
+                        <div><img src="static\assets\like-light.png" alt="" id="like-post" value="0"></div>
+                        <div>69</div>
+                        <div><img src="static\assets\dislike-light.png" alt="" id="dislike-post" value="0"></div>
+                    </div>
+                    <div id="post">
+                        <div id="post-header">
+                            <div id="post-header-left">
+                                <div id="subreddit" value="adminTest" class="post-selector">r/adminTest</div>
+                                <div id="posted-by" value="DartSams" class="post-selector">Posted by u/DartSams</div>
+                                <div id="posted-time-ago">3 hours ago</div>
+                            </div>
+                            <div id="post-header-right">
+                                <div id="join-subreddit" value="adminTest"><button class="post-selector">Join</button></div>
+                            </div>
+                        </div> 
+                        <div id="post-body">
+                            <div id="post-title"><h2>First post test.</h2></div>
+                            <div id="post-text-content"><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum saepe beatae totam eos reprehenderit harum modi error tempora, eveniet, ut doloribus facere ipsum rem doloremque adipisci aperiam quasi, quod fuga!</p></div>
+                        </div>    
+                        <div id="post-footer">
+                            <div id="comments"><img src="static\assets\comment-light.png" alt=""></div>
+                            <div id="share"><img src="static\assets\share-light.png" alt=""></div>
+                            <div id="save"><img src="static\assets\save-light.png" alt=""></div>
+                        </div>               
+                    </div>
                 </div>
-                <div id="post">
-                    <div id="post-header">
-                        <div id="post-header-left">
-                            <div id="subreddit" value="adminTest" class="post-selector">r/adminTest</div>
-                            <div id="posted-by" value="DartSams" class="post-selector">Posted by u/DartSams</div>
-                            <div id="posted-time-ago">3 hours ago</div>
-                        </div>
-                        <div id="post-header-right">
-                            <div id="join-subreddit" value="adminTest"><button class="post-selector">Join</button></div>
-                        </div>
-                    </div> 
-                    <div id="post-body">
-                        <div id="post-title"><h2>First post test.</h2></div>
-                        <div id="post-text-content"><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum saepe beatae totam eos reprehenderit harum modi error tempora, eveniet, ut doloribus facere ipsum rem doloremque adipisci aperiam quasi, quod fuga!</p></div>
-                    </div>    
-                    <div id="post-footer">
-                        <div id="comments"><img src="static\assets\comment-light.png" alt=""></div>
-                        <div id="share"><img src="static\assets\share-light.png" alt=""></div>
-                        <div id="save"><img src="static\assets\save-light.png" alt=""></div>
-                    </div>               
+            </div>
+        </div>
+
+        <div id="popup-container">
+            <div class="popup">
+                <div class="popup-header"><button onclick="closePopup()">X</button></div>
+                <div class="popup-body">
+                    <h1>Login</h1>
+                    <input type="text" placeholder="Username...">
+                    <input type="password" placeholder="Password">
+                </div>
+                <div class="popup-footer">
+                    <button id="login" class="selector" onclick="closePopup()">Login</button>
+                    <p id="register-text">New click here to <a href="/register">Register</a></p>
                 </div>
             </div>
         </div>
     </div>
 </body>
+<script> 
+    let backendData = "{{data|safe}}" //need |safe without the data isnt transfered right from backend to frontend
+    let allPost = JSON.parse(backendData.replaceAll("'",'"'))["all-post"] //converts string of recieved data to json and replaces all single quotes with double quotes because json.parse only takes double quotes
+    console.log(allPost) 
+
+
+    window.addEventListener("load", (event) => {
+        for(let i=0;i<=allPost.length;i++){
+            console.log("hello")
+            createNewPost(allPost[i]["post-num"],allPost[i]["subreddit"],allPost[i]["title"],allPost[i]["post-text"],allPost[i]["author"],allPost[i]["post-time"],allPost[i]["likes"])
+        }
+    }); //when window loads displays all post from db
+
+</script>
 </html>

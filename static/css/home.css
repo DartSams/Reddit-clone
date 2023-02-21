@@ -128,7 +128,7 @@ body{
     text-align: center;
 }
 
-#post-container{
+#main-content-container{
     display: flex;
     flex-direction: column;
     /* justify-content: space-evenly; */
@@ -141,11 +141,11 @@ body{
     /* overflow-x: hidden; */
 }
 
-#post-container .post-selections{
+#main-content-container .post-selections{
     margin:10px 0px 10px 0px
 }
 
-#post-container #create-post-container{
+#main-content-container #create-post-container{
     display: flex;
     flex-direction: row;
     /* justify-content: center; */
@@ -156,7 +156,7 @@ body{
 }
 
 
-#post-container .post-card-container{
+#main-content-container .post-card-container{
     padding:10px;
     width: 500px;
     height: 200px;
@@ -165,13 +165,13 @@ body{
     flex-direction: row;
 }
 
-/* #post-container .post-card-container #post{
+/* #main-content-container .post-card-container #post{
     display: flex;
     width:100%;
     flex-direction: column;
 } */
 
-#post-container .post-card-container #post-header{
+#main-content-container .post-card-container #post-header{
     display: flex;
     width:100%;
     height: fit-content;
@@ -180,22 +180,22 @@ body{
     align-items: baseline;
 }
 
-#post-container .post-card-container #post-header #post-header-left{
+#main-content-container .post-card-container #post-header #post-header-left{
     display: flex;
     justify-content: space-evenly;
     width:100%;
 }
 
-#post-container img{
+#main-content-container img{
     width:20px;
     height:auto;
 }
 
-#post-container #like-unlike img:hover,#post-container .post-selector{
+#main-content-container #like-unlike img:hover,#main-content-container .post-selector{
     cursor: pointer;
 }
 
-#post-container #post{
+#main-content-container #post{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -203,11 +203,11 @@ body{
     height: auto;
 }
 
-#post-container #post #post-body{
+#main-content-container #post #post-body{
     padding:10px;
 }
 
-#post-container #post-footer{
+#main-content-container #post-footer{
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -215,16 +215,45 @@ body{
     align-items: baseline;
 }
 
-#post-container #post-footer img:hover,#post-container #post-footer div:hover{
+#main-content-container #post-footer img:hover,#main-content-container #post-footer div:hover{
     cursor: pointer;
     background-color: var(--body-background-color);
 }
 
-#post-container #post-footer div{
+#main-content-container #post-footer div{
     width: 80px;
     height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 5px;
+}
+
+#popup-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top:0;
+    left:0;
+    height: 100vh;
+    width:100vw;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.popup {
+    background-color: white;
+    width: 300px;
+    max-width: 100%;
+    padding:10px 30px;
+    border-radius: 5px;
+    text-align: center;
+    color:black
+}
+
+
+.popup .popup-header {
+    margin: 0;
+    display: flex;
+    justify-content: flex-end;
 }
