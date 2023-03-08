@@ -21,6 +21,7 @@ let loginButton = document.querySelector("#login-button");
 loginButton.addEventListener("click",function(){
     console.log("Time to login.")
     openPopup()
+    loginDiv()
 });
 
 let profileButton = document.querySelector("#profile-dropdown");
@@ -330,10 +331,64 @@ function createPostDiv(parentNode,subreddit,title,text,user,postedAgo){
 
 function openPopup () {
     let popupContainer = document.getElementById("popup-container")
-    popupContainer.style.display = "flex"
+    popupContainer.style.display = "flex";
 }
 
 function closePopup () {
     let popupContainer = document.getElementById("popup-container")
-    popupContainer.style.display = "none"
+    popupContainer.style.display = "none";
+    let popupDiv = document.querySelector(".popup");
+    popupDiv.innerHTML = "";
+}
+
+
+function loginDiv(title,emailElement,usernameElement,passwordElement){
+    let popupDiv = document.querySelector(".popup");
+    let popupHeader = document.createElement("div");
+    popupHeader.className = "popup-header";
+    let closePopupButton = document.createElement("button")
+    closePopupButton.innerText = "X"
+    closePopupButton.addEventListener("click",closePopup)
+
+    let popupBody = document.createElement("div");
+    popupBody.className = "popup-body";
+    let popupTitle = document.createElement("h1");
+    popupTitle.innerText = "Login";
+    let usernamePopupInput = document.createElement("input");
+    usernamePopupInput.placeholder = "Username...";
+    let passwordPopupInput = document.createElement("input");
+    passwordPopupInput.type = "password";
+    passwordPopupInput.placeholder = "Password";
+
+    let popupFooter = document.createElement("div");
+    popupFooter.className = "popup-footer";
+    let loginButton = document.createElement("button")
+    loginButton.className = "selector";
+    loginButton.innerText = "Login";
+    loginButton.addEventListener("click",function(){
+        console.log("Logging in")
+        socket.emit("login",{"username":usernamePopupInput.value,"password":passwordPopupInput.value})
+        closePopup()
+    })
+
+    let registerButton = document.createElement("button");
+    registerButton.href = "/register";
+    registerButton.innerText = "Register";
+    registerButton.className = "selector";
+    registerButton.addEventListener("click",function(){
+        console.log("Registering account")
+        socket.emit("register",{"username":usernamePopupInput.value,"password":passwordPopupInput.value})
+        closePopup()
+    })
+
+    popupDiv.append(popupHeader)
+    popupDiv.append(popupBody)
+    popupDiv.append(popupFooter)
+    popupHeader.append(closePopupButton)
+    popupBody.append(usernamePopupInput)
+    popupBody.append(passwordPopupInput) 
+    popupBody.append(popupTitle)
+    popupFooter.append(loginButton)
+    popupFooter.append(registerButton)
+
 }

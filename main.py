@@ -1,6 +1,8 @@
 from flask import Flask,render_template
 from dotenv import load_dotenv
 from flask_socketio import SocketIO
+from flask import Flask, session
+from flask_bcrypt import Bcrypt  # encrypt passwords
 from pymongo import MongoClient
 import os
 import time
@@ -8,6 +10,7 @@ from time_func import *
 
 load_dotenv()
 app = Flask(__name__)
+bcrypt = Bcrypt(app)  ##to encrypt passwd https://flask-bcrypt.readthedocs.io/en/latest/
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
@@ -16,6 +19,7 @@ mongodb_string = f"mongodb+srv://DartSams:{mongo_password}@personal-cluser-db.qa
 client = MongoClient(mongodb_string)
 mydb = client["Personal_db"] #database in cluster
 post_table = mydb["Reddit-Post"] #table in database
+user_table = mydb["Reddit-Users"]
 
 @app.route("/")
 def home():
@@ -44,6 +48,46 @@ def create_post(data):
     post_table.insert_one(data)
 
 
+@socketio.on("login")
+def login(data):
+    print(f"Checking DB for user: {data}")
+    data = {
+        "username":data["username"],
+    }
+
+    query = user_table.find(data)
+    for i in query: #iterates through found db entry
+        # print(i)
+        passwd_check = bcrypt.check_password_hash(i["password"], data["password"]) #iterates through found query and checks the hashed password in to the typed password on browser sent here returns true or false
+        # print(passwd_check)
+
+    if passwd_check != True and query == True: #if username found in db but password is wrong flashes password is wrong
+        return False
+
+    if query != True: #if user is not found in db
+        return False
+
+    session["username"] = data["username"] #if user is found in db then sets browser session to their data
+    
+    # print(session)
+
+@socketio.on("register")
+def register(data):
+    # using the bcrypt library hashes the password
+    hash_passwd = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
+    data = {
+        "username":data["username"]
+    }
+    query = user_table.find(data)
+    if query != True: #if user tries registering with a username thats not already in db then creates a new entry
+        data = {
+            "username":data["username"],
+            "password":hash_passwd
+        }
+
+        user_table.insert_one(data)
+        print(f"Regisrering account: {data}")
+ 
 @socketio.on("like_post")
 def like_post(data):
     print(f"Liking Post: {data}")
@@ -62,4 +106,4 @@ if __name__ == "__main__":
 #make registration page
 #make login page
 #make a new page designed to create post
-#make a backend function to get all post and display to frontend
+#need to fix bug of feed sidebar not working (being overshadowed)
