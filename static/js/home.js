@@ -48,17 +48,21 @@ let createPostButton = document.querySelector("#create-post");
 createPostButton.addEventListener("click",function(){
     console.log("Creating Post.")
     let newPostText = document.querySelector("#create-new-post").value;
-    // createNewPost(newPostText,"dartsams"); //subreddit,title,text,user,postedAgo
-    let postNum = 1;
-    let subreddit = "adminTest";
-    let title = "first post test";
-    let text = newPostText;
-    let user = "dartsams";
-    let postedAgo = "now";
-    let likes = 72;
-    createNewPost(postNum,subreddit,title,text,user,postedAgo,likes)
-    socket.emit("create_post",{"post":postNum,"subreddit":subreddit,"title":title,"text":text,"user":user,"postedAgo":postedAgo,"likes":likes});
-    document.querySelector("#create-new-post").value = "";
+    socket.emit("get_max_num_post") //emits a signal to backend to request the most recent post in db to get the post number so newly created post will have a post-num id after the most recent previous db entry
+    socket.on("returned_max_num_post",function(data){
+        let num = data["max_num"];
+        // createNewPost(newPostText,"dartsams"); //subreddit,title,text,user,postedAgo
+        let postNum = num;
+        let subreddit = "adminTest";
+        let title = "first post test";
+        let text = newPostText;
+        let user = "dartsams";
+        let postedAgo = "now";
+        let likes = 0;
+        createNewPost(postNum,subreddit,title,text,user,postedAgo,likes)
+        socket.emit("create_post",{"subreddit":subreddit,"title":title,"text":text,"user":user,"postedAgo":postedAgo,"likes":likes});
+        document.querySelector("#create-new-post").value = "";
+    })
 })
 
 
@@ -181,7 +185,7 @@ function createLikeUnlikeDiv(parentNode,postNum,likesNum){
             likeImage.src = "static/assets/like-light.png";
             currentLikeAmount.innerText = likeAmount - 1;//decrements the like amount for that post
         } // when liking a post changes the image to a dark to show it has been liked 
-        socket.emit("like_post",{"post":postNum,"posted_by":"Dartsams"}) //emits a signal to backend saying post was liked to update in db
+        socket.emit("like_post",{"post":postNum,"posted_by":"Dartsams","likes":parseInt(currentLikeAmount.innerText)}) //emits a signal to backend saying post was liked to update in db
     })
     let dislikeImage = document.createElement("img");
     dislikeImage.src = "static/assets/dislike-light.png";
@@ -198,7 +202,7 @@ function createLikeUnlikeDiv(parentNode,postNum,likesNum){
             dislikeImage.src = "static/assets/dislike-light.png"; 
             currentLikeAmount.innerText = likeAmount + 1;
         } // when dislike a post changes the image to a dark to show it has been disliked
-        socket.emit("dislike_post",{"post":postNum,"posted_by":"Dartsams"}) //emits a signal to backend saying post was disliked to update in db 
+        socket.emit("dislike_post",{"post":postNum,"posted_by":"Dartsams","likes":parseInt(currentLikeAmount.innerText)}) //emits a signal to backend saying post was disliked to update in db 
     })
 
     likeButtonDiv.append(likeImage)

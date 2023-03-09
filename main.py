@@ -34,11 +34,12 @@ def create_post(data):
     current_date_time = time.ctime()
     #Creating Post: {'post': 1, 'subreddit': 'adminTest', 'title': 'first post test', 'text': 'fvfdb', 'user': 'dartsams', 'postedAgo': 'now'}
     print(f"New post data recieved: {data}")
+    most_recent_post = recent_post()
     data = {
         "author":data["user"],
         "post-date": split_compare_date(current_date_time),
         "post-time":calculate_post_time(),
-        "post-num":data["post"],
+        "post-num":most_recent_post,
         "subreddit":data["subreddit"],
         "title":data["title"],
         "post-text":data["text"],
@@ -87,15 +88,47 @@ def register(data):
 
         user_table.insert_one(data)
         print(f"Regisrering account: {data}")
+        session["username"] = data["username"]
  
 @socketio.on("like_post")
 def like_post(data):
     print(f"Liking Post: {data}")
+    old_data = {
+        "post-num":data["post"],
+    }
+
+    new_data = {
+        "$set":{
+            "likes":data["likes"]
+        }
+    }
+
+    post_table.update_one(old_data,new_data)
 
 @socketio.on("dislike_post")
 def like_post(data):
     print(f"Disliking Post: {data}")
-    socketio.emit("dislike")
+    old_data = {
+        "post-num":data["post"],
+    }
+
+    new_data = {
+        "$set":{
+            "likes":data["likes"]
+        }
+    }
+
+    post_table.update_one(old_data,new_data)
+
+@socketio.on("get_max_num_post")
+def get_max_num_post():
+    socketio.emit("returned_max_num_post",{"max_num":recent_post()})
+
+def recent_post(): #queries the db to find the post with the biggest post-num id
+    most_recent_post = max(list(post_table.find()),key=lambda i:i["post-num"])
+    # print(most_recent_post)
+    return most_recent_post["post-num"] + 1
+
     
 if __name__ == "__main__":
     # app.run(port=8000,debug=True)
