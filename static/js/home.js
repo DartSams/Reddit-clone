@@ -44,10 +44,18 @@ registerButton.addEventListener("click",function(){
     console.log("Time to register.")
 });
 
+let newPostText = document.querySelector("#create-new-post");
+    newPostText.addEventListener("click",function(){
+    window.location = "/create_post"
+})
+
 let createPostButton = document.querySelector("#create-post");
 createPostButton.addEventListener("click",function(){
     console.log("Creating Post.")
-    let newPostText = document.querySelector("#create-new-post").value;
+    let newPostText = document.querySelector("#create-new-post");
+    newPostText.addEventListener("click",function(){
+        window.location = "/create_post"
+    })
     socket.emit("get_max_num_post") //emits a signal to backend to request the most recent post in db to get the post number so newly created post will have a post-num id after the most recent previous db entry
     socket.on("returned_max_num_post",function(data){
         let num = data["max_num"];
@@ -55,7 +63,7 @@ createPostButton.addEventListener("click",function(){
         let postNum = num;
         let subreddit = "adminTest";
         let title = "first post test";
-        let text = newPostText;
+        let text = newPostText.value;
         let user = "dartsams";
         let postedAgo = "now";
         let likes = 0;

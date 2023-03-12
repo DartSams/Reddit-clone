@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Create Post</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/create_post.css') }}" >
+        <script src="{{url_for('static', filename='js/create_post.js')}}" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    </head>
+<body>
+    <div id="navbar-container">
+        <div id="navbar">
+            <div id="navbar-left-container">
+                <div id="image-logo">Logo</div>
+            </div>
+            <div id="navbar-middle-container">
+                <div id="input">
+                    <input type="text" id="search-bar" placeholder="Search Reddit" class="selector">
+                </div>
+                <button id="search-button">Search</button>
+            </div>
+        
+            <div id="navbar-right-container">
+                <div id="login-button">
+                    <button id="login-button" class="selector">
+                        Login
+                    </button>
+                </div>
+                <div id="profile-dropdown-container">
+                    <button id="profile-dropdown" class="selector">
+                        Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="body-container">
+        <div id="body-container-header">
+            <h2>Create Post</h2>
+            <div id="subreddit-input-div">
+                <input type="text" id="subreddit-input" placeholder="Type a subreddit">
+            </div>
+        </div>
+        <div id="post-card-container">
+            <div id="post-card-header">
+                <div id="post-card-title">Post</div>
+                <div id="post-card-title">File</div>
+                <div id="post-card-title">Link</div>
+                <div id="post-card-title">Poll</div>
+                <div id="post-card-title">Talk</div>
+            </div>
+            <div id="post-card-body">
+                <div id="title-input-div">
+                    <input type="text" placeholder="Title" id="create-post-title">
+                </div>
+                <div id="text-input-div">
+                    <textarea name="" id="create-post-text"  placeholder="Text(Optional)"></textarea>
+                </div>
+                <div id="save-submit-div">
+                    <button id="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

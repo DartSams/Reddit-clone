@@ -29,6 +29,11 @@ def home():
     print(data)
     return render_template("home.html",data=data)
 
+@app.route("/create_post")
+def create_post():
+    return render_template("create_post.html")
+
+
 @socketio.on("create_post")
 def create_post(data):
     current_date_time = time.ctime()

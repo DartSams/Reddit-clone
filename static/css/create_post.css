@@ -1,0 +1,152 @@
+*{
+    margin:0;
+    font-size: var(--label-text-size);
+}
+
+:root{
+    --navbar-background-color:#ffffff;
+    --body-background-color:#d9dbdc;
+    --label-text-size:20px;
+    --button-background-color:#0079D3;
+}
+
+/* h1,h2,h3,h4,h5,h6,p,pre{
+    cursor: auto;
+} */
+
+#navbar button,#feed-container button{
+    padding:3px;
+    border-radius: 30px;
+    border: solid white;
+    color:white;
+    background-color: var(--button-background-color);
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    height:auto
+}
+
+body{
+    /* display: flex;
+    flex-direction: column; */
+    width:100vw;
+    height: 100vh;
+    background-color: var(--body-background-color);
+    overflow-x: hidden;
+
+}
+
+#navbar-container{    
+    width: fit-content;
+    height: 2%;
+    position: fixed;
+    z-index: 2;
+}
+
+#navbar{
+    z-index: -1;
+    display: flex;
+    width:100vw;
+    height: 100%;
+    padding:14px;
+    background-color: var(--navbar-background-color);
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid #EDEFF1;
+}
+
+#navbar #image-logo{
+    cursor: pointer;
+}
+
+#navbar-right-container,#navbar-left-container,#navbar-middle-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: baseline;
+}
+
+#navbar-right-container{
+    margin-right: 3%;
+}
+
+#navbar button,#navbar select,#navbar input{
+    margin: 5px 5px 5px 5px ;
+    border-radius: 30px;
+}   
+
+#navbar input{
+    width:50vw;
+    font-size: var(--label-text-size);
+    text-indent: 2%;
+}
+
+#body-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    /* z-index: -8; */
+    height: 100vh;
+    width: 100vw;   
+}
+
+#body-container #post-card-container{
+    border-style: solid;
+    border-width: 3px;
+    width:fit-content;
+    height: fit-content;
+}
+
+#body-container #post-card-container #post-card-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#body-container #post-card-container #post-card-body{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-around; */
+    /* align-items: center; */
+    flex-wrap: wrap;
+    margin: 10px;
+}
+
+#body-container #post-card-container #post-card-header #post-card-title{
+    border: 3px solid;
+    width:99px;
+    text-align: center;
+    padding:10px;
+    margin: 5px;
+}
+
+#body-container #post-card-container #post-card-header #post-card-title:hover{
+    cursor: pointer;
+    background-color: var(--button-background-color);
+}
+
+#body-container #post-card-container #post-card-body #text-input-div textarea{
+    width: 100%;
+    height: 200px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+}
+
+
+#body-container #post-card-container #post-card-body #save-submit-div{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+#body-container #post-card-container #post-card-body #save-submit-div button{
+    margin: 10px;
+}
