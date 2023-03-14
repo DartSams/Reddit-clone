@@ -2,6 +2,26 @@ let socket = io();
 socket.on('connect', function() {
     console.log("socket connected")
     socket.emit('my event', {data: 'I\'m connected!'});
+    console.log(sessionStorage.getItem("username"))
+    if (sessionStorage.getItem("username")) {
+        let navbarRight = document.querySelector("#navbar-right-container")
+        let profileContainer = document.createElement("div")
+        profileContainer.id = "profile-dropdown-container"
+        let profileButton = document.createElement("button")
+        profileButton.id = "profile-dropdown"
+        profileButton.className = "selector"
+        profileButton.innerText = "Profile"
+        profileButton.addEventListener("click",function(){
+            console.log("Time to go to profile.")
+            // window.location = "/profile"
+            socket.emit("profile",{"username":sessionStorage.getItem("username")})
+        })
+
+        profileContainer.append(profileButton)
+        navbarRight.append(profileContainer)
+        let registerButtonDiv = document.querySelector("#feed-container")
+        registerButtonDiv.removeChild(registerButtonDiv.lastElementChild);
+    }
 });
 
 logoButton = document.querySelector("#image-logo");
@@ -24,10 +44,10 @@ loginButton.addEventListener("click",function(){
     loginDiv()
 });
 
-let profileButton = document.querySelector("#profile-dropdown");
-profileButton.addEventListener("click",function(){
-    console.log("Time to go to profile.")
-});
+// let profileButton = document.querySelector("#profile-dropdown");
+// profileButton.addEventListener("click",function(){
+//     console.log("Time to go to profile.")
+// });
 
 let feedHome = document.querySelector("#feed-home");
 feedHome.addEventListener("click",function(){
@@ -42,6 +62,8 @@ popularHome.addEventListener("click",function(){
 let registerButton = document.querySelector("#register-button");
 registerButton.addEventListener("click",function(){
     console.log("Time to register.")
+    openPopup()
+    loginDiv()
 });
 
 let newPostText = document.querySelector("#create-new-post");
@@ -266,6 +288,7 @@ function createPostDiv(parentNode,subreddit,title,text,user,postedAgo){
         // let subredditJoinButton = subRedditLink.getAttribute("value")
         console.log("joining subreddit.")
         console.log(subreddit)
+        socket.emit("join_subreddit",{"username":sessionStorage.getItem("username"),"subreddit":subreddit})
     })
 
     //body
@@ -404,3 +427,27 @@ function loginDiv(title,emailElement,usernameElement,passwordElement){
     popupFooter.append(registerButton)
 
 }
+
+
+socket.on("found_user", function(data) {
+    console.log(data)
+    sessionStorage.setItem("username", data["username"]);
+    console.log(sessionStorage.getItem("username"))
+    let navbarRight = document.querySelector("#navbar-right-container")
+    let profileContainer = document.createElement("div")
+    profileContainer.id = "profile-dropdown-container"
+    let profileButton = document.createElement("button")
+    profileButton.id = "profile-dropdown"
+    profileButton.className = "selector"
+    profileButton.innerText = "Profile"
+    profileButton.addEventListener("click",function(){
+        console.log("Time to go to profile.")
+    })
+
+    profileContainer.append(profileButton)
+    navbarRight.append(profileContainer)
+});
+
+
+// Remove saved data from sessionStorage 
+// sessionStorage.removeItem("key"); <- use this later for user logout

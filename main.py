@@ -1,7 +1,6 @@
-from flask import Flask,render_template
+from flask import Flask, render_template, redirect, request
 from dotenv import load_dotenv
-from flask_socketio import SocketIO
-from flask import Flask, session
+from flask_socketio import SocketIO,emit
 from flask_bcrypt import Bcrypt  # encrypt passwords
 from pymongo import MongoClient
 import os
@@ -12,6 +11,8 @@ load_dotenv()
 app = Flask(__name__)
 bcrypt = Bcrypt(app)  ##to encrypt passwd https://flask-bcrypt.readthedocs.io/en/latest/
 app.config['SECRET_KEY'] = 'secret!'
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
 socketio = SocketIO(app)
 
 mongo_password = os.environ.get("mongo_password")
@@ -24,15 +25,33 @@ user_table = mydb["Reddit-Users"]
 @app.route("/")
 def home():
     data = {
-        "all-post":list(post_table.find({},{"_id":0}))
+        "all-post":list(post_table.find({},{"_id":0})),
     }
-    print(data)
+
     return render_template("home.html",data=data)
 
 @app.route("/create_post")
 def create_post():
     return render_template("create_post.html")
 
+@socketio.on("profile")
+def profile(data):
+    lst = []
+    db_data = {
+        "username":data["username"],
+    }
+
+    query = user_table.find(db_data)
+
+    if query:
+    
+        for i in query:
+            data = {
+                "all-post":list(post_table.find({"author":i["username"],"subreddit":"GSU"},{"_id":0})),
+            }
+        print(data)
+
+    return render_template("profile.html",data=data)
 
 @socketio.on("create_post")
 def create_post(data):
@@ -57,15 +76,15 @@ def create_post(data):
 @socketio.on("login")
 def login(data):
     print(f"Checking DB for user: {data}")
-    data = {
+    db_data = {
         "username":data["username"],
     }
 
-    query = user_table.find(data)
+    query = user_table.find(db_data)
     for i in query: #iterates through found db entry
         # print(i)
         passwd_check = bcrypt.check_password_hash(i["password"], data["password"]) #iterates through found query and checks the hashed password in to the typed password on browser sent here returns true or false
-        # print(passwd_check)
+        print(passwd_check)
 
     if passwd_check != True and query == True: #if username found in db but password is wrong flashes password is wrong
         return False
@@ -73,9 +92,10 @@ def login(data):
     if query != True: #if user is not found in db
         return False
 
-    session["username"] = data["username"] #if user is found in db then sets browser session to their data
-    
-    # print(session)
+    # session["username"] = data["username"] #if user is found in db then sets browser session to their data
+    # session["username"] = db_data["username"]
+    if passwd_check: #if bycrypt check hash function returns True then emits a signal to frontend to allow user session
+        emit("found_user",{"username":data["username"]}) #if user is found in db then sets browser session to their data
 
 @socketio.on("register")
 def register(data):
@@ -88,12 +108,14 @@ def register(data):
     if query != True: #if user tries registering with a username thats not already in db then creates a new entry
         data = {
             "username":data["username"],
-            "password":hash_passwd
+            "password":hash_passwd,
+            "subreddit_lst":[]
         }
 
         user_table.insert_one(data)
         print(f"Regisrering account: {data}")
-        session["username"] = data["username"]
+        # session["username"] = data["username"]
+        emit("found_user",{"username":data["username"]}) #if user is found in db then sets browser session to their data
  
 @socketio.on("like_post")
 def like_post(data):
@@ -127,14 +149,37 @@ def like_post(data):
 
 @socketio.on("get_max_num_post")
 def get_max_num_post():
-    socketio.emit("returned_max_num_post",{"max_num":recent_post()})
+    emit("returned_max_num_post",{"max_num":recent_post()})
 
 def recent_post(): #queries the db to find the post with the biggest post-num id
     most_recent_post = max(list(post_table.find()),key=lambda i:i["post-num"])
     # print(most_recent_post)
     return most_recent_post["post-num"] + 1
 
-    
+@socketio.on("join_subreddit")
+def join_subreddit(data):
+    lst = [] #list to hold all subreddits
+    db_data = {
+        "username":data["username"],
+    }
+
+    query = user_table.find(db_data)
+    for i in query:
+        # print(type(i["subreddit_lst"]))
+        for sub in i["subreddit_lst"]: #gets all subreddits that the user are already in and append them to list
+            lst.append(sub)
+
+    lst.append(data["subreddit"]) #adds new subreddit to list
+
+    myquery = { "username": data["username"] }
+    newvalues = { "$set": { 
+        "subreddit_lst": lst
+        }
+    } #updates user subreddit list to include new and old subreddits
+
+    user_table.update_one(myquery, newvalues)
+
+
 if __name__ == "__main__":
     # app.run(port=8000,debug=True)
     socketio.run(app,port=8000,debug=True)
