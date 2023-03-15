@@ -22,6 +22,17 @@ mydb = client["Personal_db"] #database in cluster
 post_table = mydb["Reddit-Post"] #table in database
 user_table = mydb["Reddit-Users"]
 
+
+def user_data(username):
+    data = {
+        "username":username
+    }
+    query = list(user_table.find(data))
+    return query.pop()
+
+
+
+
 @app.route("/")
 def home():
     data = {
@@ -36,22 +47,27 @@ def create_post():
 
 @socketio.on("profile")
 def profile(data):
-    lst = []
+    post = []
     db_data = {
         "username":data["username"],
     }
-
     query = user_table.find(db_data)
-
     if query:
-    
-        for i in query:
-            data = {
-                "all-post":list(post_table.find({"author":i["username"],"subreddit":"GSU"},{"_id":0})),
-            }
-        print(data)
+        name = user_data(data["username"])["username"] #if user is found in db then sets local variable to their name
+        user_subreddit_lst = user_data(data["username"])["subreddit_lst"]
 
-    return render_template("profile.html",data=data)
+        for i in user_subreddit_lst:
+            # list(post_table.find({"author":name,"subreddit":i},{"_id":0}))
+            
+            # print(post_table.find({"author":name,"subreddit":i},{"_id":0}))
+            for j in post_table.find({"author":name,"subreddit":i},{"_id":0}):
+                # print(j)
+                post.append(j)
+
+        print(post)
+    
+        emit("load_profile",{"post":post})
+
 
 @socketio.on("create_post")
 def create_post(data):
@@ -156,6 +172,13 @@ def recent_post(): #queries the db to find the post with the biggest post-num id
     # print(most_recent_post)
     return most_recent_post["post-num"] + 1
 
+
+
+
+
+
+
+
 @socketio.on("join_subreddit")
 def join_subreddit(data):
     lst = [] #list to hold all subreddits
@@ -169,7 +192,8 @@ def join_subreddit(data):
         for sub in i["subreddit_lst"]: #gets all subreddits that the user are already in and append them to list
             lst.append(sub)
 
-    lst.append(data["subreddit"]) #adds new subreddit to list
+    if data["subreddit"] not in lst: #use cant join subreddit if already in it
+        lst.append(data["subreddit"]) #adds new subreddit to list
 
     myquery = { "username": data["username"] }
     newvalues = { "$set": { 

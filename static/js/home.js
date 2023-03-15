@@ -2,7 +2,8 @@ let socket = io();
 socket.on('connect', function() {
     console.log("socket connected")
     socket.emit('my event', {data: 'I\'m connected!'});
-    console.log(sessionStorage.getItem("username"))
+
+    console.log(sessionStorage)
     if (sessionStorage.getItem("username")) {
         let navbarRight = document.querySelector("#navbar-right-container")
         let profileContainer = document.createElement("div")
@@ -21,6 +22,8 @@ socket.on('connect', function() {
         navbarRight.append(profileContainer)
         let registerButtonDiv = document.querySelector("#feed-container")
         registerButtonDiv.removeChild(registerButtonDiv.lastElementChild);
+        let loginButtonDiv = document.querySelector("#navbar-right-container")
+        loginButtonDiv.removeChild(loginButtonDiv.firstElementChild)
     }
 });
 
@@ -178,7 +181,7 @@ function getPostData(){
     
 // })
 
-function createNewPost(postNum,subreddit,title,text,user,postedAgo,likesNum=0){
+function createNewPost(postNum,subreddit,joined,title,text,user,postedAgo,likesNum=0){
     let postContainer = document.querySelector("#post-container");
     let newPostDiv = document.createElement("div");
     newPostDiv.classList.add("post-card-container"); // adds a class to the div
@@ -187,7 +190,7 @@ function createNewPost(postNum,subreddit,title,text,user,postedAgo,likesNum=0){
     // console.log(newPostDiv)
     
     createLikeUnlikeDiv(newPostDiv,postNum,likesNum);
-    createPostDiv(newPostDiv,subreddit,title,text,user,postedAgo);
+    createPostDiv(newPostDiv,subreddit,joined,title,text,user,postedAgo);
     // socket.emit("create_post",{"post":postNum,"subreddit":subreddit,"title":title,"text":text,"user":user,"postedAgo":postedAgo});
     postContainer.prepend(newPostDiv) //appends new post div to the top of the list
 }
@@ -242,7 +245,7 @@ function createLikeUnlikeDiv(parentNode,postNum,likesNum){
     parentNode.append(likeUnlikeDiv)
 }; //function to create like and unlike sidebar to a post
 
-function createPostDiv(parentNode,subreddit,title,text,user,postedAgo){
+function createPostDiv(parentNode,subreddit,joined,title,text,user,postedAgo){
     let postDiv = document.createElement("div");
     postDiv.id = "post";
     let postHeaderDiv = document.createElement("div");
@@ -283,13 +286,39 @@ function createPostDiv(parentNode,subreddit,title,text,user,postedAgo){
     joinSubredditButtonDiv.value = subreddit;
     let joinSubredditButton = document.createElement("button");
     joinSubredditButton.classList.add("post-selector");
-    joinSubredditButton.innerText = "Join";
+    // console.log(sessionStorage)
+    // console.log(sessionStorage.getItem("post-lst"))
+    // console.log(JSON.stringify(sessionStorage.getItem("post-lst").split(",")[0]))
+    // let x = JSON.stringify(sessionStorage.getItem("post-lst"))
+    let subredditLst = sessionStorage.getItem("post-lst").split(",")
+    for (let i=0;i<subredditLst.length;i++){
+        if (subredditLst[i] == subreddit){
+            joinSubredditButton.innerText = "Joined";
+            joinSubredditButton.addEventListener("click",function(){
+                // let subredditJoinButton = subRedditLink.getAttribute("value")
+                console.log("leaving subreddit.")
+                console.log(subreddit)
+                socket.emit("leave_subreddit",{"username":sessionStorage.getItem("username"),"subreddit":subreddit})
+            })
+        } else {
+            joinSubredditButton.innerText = "Join";
+            joinSubredditButton.addEventListener("click",function(){
+                // let subredditJoinButton = subRedditLink.getAttribute("value")
+                console.log("joining subreddit.")
+                console.log(subreddit)
+                socket.emit("join_subreddit",{"username":sessionStorage.getItem("username"),"subreddit":subreddit})
+            })
+        }
+    }
+    
+    
     joinSubredditButton.addEventListener("click",function(){
         // let subredditJoinButton = subRedditLink.getAttribute("value")
         console.log("joining subreddit.")
         console.log(subreddit)
         socket.emit("join_subreddit",{"username":sessionStorage.getItem("username"),"subreddit":subreddit})
     })
+
 
     //body
     let postBodyDiv = document.createElement("div");
@@ -348,10 +377,13 @@ function createPostDiv(parentNode,subreddit,title,text,user,postedAgo){
     postHeaderLeftDiv.append(postSubreddit)
     postHeaderLeftDiv.append(postedByDiv)
     postHeaderLeftDiv.append(postedAgoDiv)
+    postHeaderDiv.append(postHeaderLeftDiv)
     joinSubredditButtonDiv.append(joinSubredditButton)
     postHeaderRightDiv.append(joinSubredditButtonDiv)
-    postHeaderDiv.append(postHeaderLeftDiv)
     postHeaderDiv.append(postHeaderRightDiv)
+    
+    
+    
     postDiv.append(postHeaderDiv)
 
     postTitleDiv.append(postTitle)
@@ -446,7 +478,24 @@ socket.on("found_user", function(data) {
 
     profileContainer.append(profileButton)
     navbarRight.append(profileContainer)
+    let registerButtonDiv = document.querySelector("#feed-container")
+    registerButtonDiv.removeChild(registerButtonDiv.lastElementChild);
+    let loginButtonDiv = document.querySelector("#navbar-right-container")
+    loginButtonDiv.removeChild(loginButtonDiv.firstElementChild)
 });
+
+socket.on("load_profile",function(data){
+    document.querySelector("#post-container").innerHTML = ""
+    lst = []
+
+    
+    for(let i=0;i<data["post"].length;i++){
+        lst.push(data["post"][i]["subreddit"])
+        // console.log(data["post"][i]["subreddit"])
+        createNewPost(data["post"][i]["post-num"],data["post"][i]["subreddit"],joined="yes",data["post"][i]["title"],data["post"][i]["post-text"],data["post"][i]["author"],data["post"][i]["post-time"],data["post"][i]["likes"])
+    }
+    sessionStorage.setItem("post-lst", lst.toString());
+})
 
 
 // Remove saved data from sessionStorage 
