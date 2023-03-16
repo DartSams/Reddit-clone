@@ -210,7 +210,4 @@ if __name__ == "__main__":
 
 
 ##TODO
-#make registration page
-#make login page
-#make a new page designed to create post
-#need to fix bug of feed sidebar not working (being overshadowed)
+##make a route to go to any subreddit using route parameters

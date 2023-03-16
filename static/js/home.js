@@ -24,6 +24,23 @@ socket.on('connect', function() {
         registerButtonDiv.removeChild(registerButtonDiv.lastElementChild);
         let loginButtonDiv = document.querySelector("#navbar-right-container")
         loginButtonDiv.removeChild(loginButtonDiv.firstElementChild)
+
+        let feedContainer = document.querySelector("#feed-container")
+        let yourCoommunities = document.createElement("p")
+        yourCoommunities.innerText = "Your Communities";
+        feedContainer.append(yourCoommunities)
+        let subredditLst = sessionStorage.getItem("post-lst").split(",")
+        for (let i=0;i<subredditLst.length;i++){
+            let newFeedDiv = document.createElement("div")
+            newFeedDiv.classList.add("feed-option")
+            newFeedDiv.classList.add("feed-selector")
+            let feedName = document.createElement("a")
+            feedName.href = `/r/${subredditLst[i]}`
+            feedName.innerText = subredditLst[i]
+            newFeedDiv.append(feedName)
+            feedContainer.append(newFeedDiv)
+        }
+        
     }
 });
 
@@ -286,10 +303,7 @@ function createPostDiv(parentNode,subreddit,joined,title,text,user,postedAgo){
     joinSubredditButtonDiv.value = subreddit;
     let joinSubredditButton = document.createElement("button");
     joinSubredditButton.classList.add("post-selector");
-    // console.log(sessionStorage)
-    // console.log(sessionStorage.getItem("post-lst"))
-    // console.log(JSON.stringify(sessionStorage.getItem("post-lst").split(",")[0]))
-    // let x = JSON.stringify(sessionStorage.getItem("post-lst"))
+
     let subredditLst = sessionStorage.getItem("post-lst").split(",")
     for (let i=0;i<subredditLst.length;i++){
         if (subredditLst[i] == subreddit){
@@ -485,16 +499,20 @@ socket.on("found_user", function(data) {
 });
 
 socket.on("load_profile",function(data){
-    document.querySelector("#post-container").innerHTML = ""
-    lst = []
+    document.querySelector("#post-container").innerHTML = ""; //clears previous post container
+    let lst = []
 
     
     for(let i=0;i<data["post"].length;i++){
-        lst.push(data["post"][i]["subreddit"])
+        let sub = data["post"][i]["subreddit"]
+        if (lst.includes(sub) === false){
+            lst.push(data["post"][i]["subreddit"])
+        }
         // console.log(data["post"][i]["subreddit"])
         createNewPost(data["post"][i]["post-num"],data["post"][i]["subreddit"],joined="yes",data["post"][i]["title"],data["post"][i]["post-text"],data["post"][i]["author"],data["post"][i]["post-time"],data["post"][i]["likes"])
     }
     sessionStorage.setItem("post-lst", lst.toString());
+
 })
 
 
