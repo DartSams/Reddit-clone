@@ -29,6 +29,8 @@ socket.on('connect', function() {
         let yourCoommunities = document.createElement("p")
         yourCoommunities.innerText = "Your Communities";
         feedContainer.append(yourCoommunities)
+        let subbedSubredditDiv = document.createElement("div");
+        subbedSubredditDiv.id = "subbed-subreddits"
         let subredditLst = sessionStorage.getItem("post-lst").split(",")
         for (let i=0;i<subredditLst.length;i++){
             let newFeedDiv = document.createElement("div")
@@ -38,8 +40,9 @@ socket.on('connect', function() {
             feedName.href = `/r/${subredditLst[i]}`
             feedName.innerText = subredditLst[i]
             newFeedDiv.append(feedName)
-            feedContainer.append(newFeedDiv)
-        }
+            subbedSubredditDiv.append(newFeedDiv)
+        } //adds user subscribed subreddits to feed sidebar
+        feedContainer.append(subbedSubredditDiv)
         
     }
 });

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>r/{{data["subreddit"]}}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}" >
+    <script src="{{url_for('static', filename='js/home.js')}}" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="navbar-container">
+        <div id="navbar">
+            <div id="navbar-left-container">
+                <div id="image-logo">Logo</div>
+            </div>
+            <div id="navbar-middle-container">
+                <div id="input">
+                    <input type="text" id="search-bar" placeholder="Search Reddit" class="selector">
+                </div>
+                <button id="search-button">Search</button>
+            </div>
+        
+            <div id="navbar-right-container">
+                <div id="login-button">
+                    <button id="login-button" class="selector">
+                        Login
+                    </button>
+                </div>
+                <!-- <div id="profile-dropdown-container">
+                    <button id="profile-dropdown" class="selector">
+                        Profile
+                    </button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <div id="body-container">
+        <div id="feed-container">
+            <p>Feeds</p>
+            <div id="feed-home" class="feed-option feed-selector">
+                <img src="static\assets\light-svg.svg" alt="">
+                <h2>Home</h2>
+            </div>
+            <div id="feed-popular" class="feed-option feed-selector">
+                <img src="static\assets\light-svg.svg" alt="">
+                <h2>Popular</h2>
+            </div>
+            <hr>
+
+            <div id="feed-register-container">
+                <p>Click below to join reddit.</p>
+                <button id="register-button" class="feed-selector">Register</button>
+            </div>
+        </div>
+
+        <div id="main-content-container">
+            <div id="create-post-container" class="post-sections">
+                <div>
+                    <button id="to-profile">Profile</button>
+                </div>
+                <div>
+                    <input type="text" placeholder="Create post" id="create-new-post">
+                </div>
+                <div>
+                    <button id="create-post">Create</button>
+                </div>
+            </div>
+    
+            <div id="post-container">
+            {% for post in data["all-post"] %}
+                <div class="post-card-container post-selections">
+                    <div id="like-unlike">
+                        <div><img src="{{ url_for('static', filename='assets/like-light.png') }}" alt="" id="like-post" value="0"></div>
+                        <div>0</div>
+                        <div><img src="{{ url_for('static', filename='assets/dislike-light.png') }}" alt="" id="dislike-post" value="0"></div>
+                    </div>
+                    <div id="post">
+                        <div id="post-header">
+                            <div id="post-header-left">
+                                <div id="subreddit" value="adminTest" class="post-selector">r/{{post["subreddit"]}}</div>
+                                <div id="posted-by" value="DartSams" class="post-selector">Posted by u/{{post["author"]}}</div>
+                                <div id="posted-time-ago">{{post["post-time"]}}</div>
+                            </div>
+
+                        </div> 
+                        <div id="post-body">
+                            <div id="post-title"><h2>{{post["title"]}}</h2></div>
+                            <div id="post-text-content"><p>{{post["post-text"]}}</p></div>
+                        </div>    
+                        <div id="post-footer">
+                            <div id="comments"><img src="{{ url_for('static', filename='assets/comment-light.png') }}" alt=""></div>
+                            <div id="share"><img src="{{ url_for('static', filename='assets/share-light.png') }}" alt=""></div>
+                            <div id="save"><img src="{{ url_for('static', filename='assets/save-light.png') }}" alt=""></div>
+                        </div>               
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    let backendData = "{{data|safe}}" //need |safe without the data isnt transfered right from backend to frontend
+    let allPost = JSON.parse(backendData.replaceAll("'",'"'))["all-post"] //converts string of recieved data to json and replaces all single quotes with double quotes because json.parse only takes double quotes
+    console.log(allPost) 
+
+
+    // window.addEventListener("load", (event) => {
+    //     for(let i=0;i<=allPost.length;i++){
+    //         createNewPost(allPost[i]["post-num"],allPost[i]["subreddit"],joined=true,allPost[i]["title"],allPost[i]["post-text"],allPost[i]["author"],allPost[i]["post-time"],allPost[i]["likes"])
+    //     }
+    // }); //when window loads displays all post from db
+    let likePostButton = document.querySelector("#like-post");
+    let numLikes = likePostButton.parentNode.children[1]
+    likePostButton.addEventListener("click",function(){
+        let postValue = likePostButton.getAttribute("value")
+        console.log("liking post.")
+        console.log(postValue)
+        let likeAmount = parseInt(numLikes.innerText)
+        if (likePostButton.src.includes("dark") === false) { // if the image src doesnt have dark in it then it will change that src to the dark image version
+            likePostButton.src = "{{ url_for('static', filename='assets/like-dark.png') }}"
+            numLikes.innerText = likeAmount + 1; //increments the like amount for that post
+        } else { // if the image src does have dark in it then it will change the src to the light image version
+            likePostButton.src = "{{ url_for('static', filename='assets/like-light.png') }}"
+            numLikes.innerText = likeAmount - 1;//decrements the like amount for that post
+        } // when liking a post changes the image to a dark to show it has been liked 
+        
+        socket.emit("like_post",{"post":0,"posted_by":"Dartsams"})
+    });
+
+    let dislikePostButton = document.querySelector("#dislike-post");
+    dislikePostButton.addEventListener("click",function(){
+        let postValue = dislikePostButton.getAttribute("value")
+        console.log("Disliking post.")
+        console.log(postValue)
+        let likeAmount = parseInt(numLikes.innerText)
+        if (dislikePostButton.src.includes("dark") === false) { // if the image src doesnt have dark in it then it will change that src to the dark image version
+            dislikePostButton.src = "{{ url_for('static', filename='assets/dislike-dark.png') }}"
+            numLikes.innerText = likeAmount + 1; //increments the like amount for that post
+        } else { // if the image src does have dark in it then it will change the src to the light image version
+            dislikePostButton.src = "{{ url_for('static', filename='assets/dislike-light.png') }}"
+            numLikes.innerText = likeAmount - 1;//decrements the like amount for that post
+        } // when dislike a post changes the image to a dark to show it has been disliked 
+    });
+
+    let subRedditLink = document.querySelector("#subreddit");
+    subRedditLink.addEventListener("click",function(){
+        let subredditLinkName = subRedditLink.getAttribute("value")
+        console.log("Going to subreddit.")
+        console.log(subredditLinkName)
+    });
+
+    let posterLink = document.querySelector("#posted-by");
+    posterLink.addEventListener("click",function(){
+        let posterLinkName = posterLink.getAttribute("value")
+        console.log("Going to post creator page.")
+        console.log(posterLinkName)
+    });
+
+    // let subredditJoinButton = document.querySelector("#join-subreddit");
+    // subredditJoinButton.addEventListener("click",function(){
+    //     let subredditJoinButton = subRedditLink.getAttribute("value")
+    //     console.log("joining subreddit.")
+    //     console.log(subredditJoinButton)
+    // });
+
+    let postCommentButton = document.querySelector("#comments");
+    postCommentButton.addEventListener("click",function(){
+        console.log("Checking post comments.")
+    });
+
+    let postShareButton = document.querySelector("#share");
+    postShareButton.addEventListener("click",function(){
+        console.log("Sharing post.")
+    });
+
+    let postSaveButton = document.querySelector("#save");
+    postSaveButton.addEventListener("click",function(){
+        console.log("Saving post.")
+        if (postSaveButton.firstChild.src.includes("dark") === false) { // if the image src doesnt have dark in it then it will change that src to the dark image version
+            postSaveButton.firstChild.src = "{{ url_for('static', filename='assets/save-dark.png') }}"
+        } else { // if the image src does have dark in it then it will change the src to the light image version
+            postSaveButton.firstChild.src = "{{ url_for('static', filename='assets/save-light.png') }}"
+        } // when saving a post changes the image to a dark to show it has been saved 
+        
+    })
+</script>
+</html>

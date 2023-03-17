@@ -45,6 +45,16 @@ def home():
 def create_post():
     return render_template("create_post.html")
 
+@app.route("/r/<subreddit>")
+def subreddit(subreddit):
+    data = {
+        "subreddit":subreddit,
+        "all-post":list(post_table.find({"subreddit":subreddit},{"_id":0})),
+    }
+    print(data["all-post"])
+    return render_template("subreddit.html",data=data)
+
+
 @socketio.on("profile")
 def profile(data):
     post = []
@@ -210,4 +220,5 @@ if __name__ == "__main__":
 
 
 ##TODO
-##make a route to go to any subreddit using route parameters
+##change profile socket to route with parameters to see others profile
+##on subreddit page add in subreddit title block to include background picture,title,join/leave button
