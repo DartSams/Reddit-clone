@@ -72,6 +72,12 @@ loginButton.addEventListener("click",function(){
 //     console.log("Time to go to profile.")
 // });
 
+let subredditButton = document.querySelector("#create-subbreddit-button")
+subredditButton.addEventListener("click",function(){
+    openPopup()
+    createSubredditDiv()
+})
+
 let feedHome = document.querySelector("#feed-home");
 feedHome.addEventListener("click",function(){
     console.log("Going to home page.")
@@ -274,11 +280,12 @@ function createPostDiv(parentNode,subreddit,joined,title,text,user,postedAgo){
     //Left
     let postHeaderLeftDiv = document.createElement("div");
     postHeaderLeftDiv.id = "post-header-left";
-    let postSubreddit = document.createElement("div");
+    let postSubreddit = document.createElement("a");
     postSubreddit.classList.add("post-selector");
     postSubreddit.id = "subreddit"
     postSubreddit.innerText = "r/" + subreddit
     postSubreddit.value = subreddit
+    postSubreddit.href = `/r/${subreddit}`
     postSubreddit.addEventListener("click",function(){
         // let subredditLinkName = postSubreddit.getAttribute("value")
         console.log("Going to subreddit.")
@@ -426,8 +433,9 @@ function closePopup () {
 }
 
 
-function loginDiv(title,emailElement,usernameElement,passwordElement){
+function loginDiv(){
     let popupDiv = document.querySelector(".popup");
+    popupDiv.id = "login-container"
     let popupHeader = document.createElement("div");
     popupHeader.className = "popup-header";
     let closePopupButton = document.createElement("button")
@@ -475,6 +483,111 @@ function loginDiv(title,emailElement,usernameElement,passwordElement){
     popupFooter.append(loginButton)
     popupFooter.append(registerButton)
 
+}
+
+function createSubredditDiv(){
+    let popupDiv = document.querySelector(".popup");
+    popupDiv.id = "create-subreddit-container"
+    let popupHeader = document.createElement("div");
+    popupHeader.className = "popup-header";
+    let closePopupButton = document.createElement("button")
+    closePopupButton.innerText = "X"
+    closePopupButton.addEventListener("click",closePopup)
+
+    let popupBody = document.createElement("div");
+    popupBody.className = "popup-body";
+    let popupTitle = document.createElement("h1");
+    popupTitle.id = "popup-title"
+    popupTitle.innerText = "Create a Subreddit";
+
+    let subredditNameInput = document.createElement("div")
+    subredditNameInput.id = "wrapper"
+    let predefinedNameInput = document.createElement("input");
+    predefinedNameInput.value = "r/";
+    predefinedNameInput.id = "static"
+    let createdNameInput = document.createElement("input");
+    createdNameInput.required = true;
+
+    let subredditTypeDiv = document.createElement("div");
+    subredditTypeDiv.id = "subreddit-type-div"
+    let typeTitle = document.createElement("h2")
+    typeTitle.innerText = "Subreddit Type"
+
+    let publicInputDiv = document.createElement("div");
+    let publicInput = document.createElement("input");
+    publicInput.type = "radio"
+    publicInput.name = "communityType"
+    publicInput.value = "public"
+
+    let publicLabel = document.createElement("label")
+    publicLabel.innerText = "Public"
+
+    let restrictedInputDiv = document.createElement("div")
+    let restrictedInput = document.createElement("input");
+    restrictedInput.type = "radio"
+    restrictedInput.name = "communityType"
+    restrictedInput.value = "restricted"
+
+    let restrictedLabel = document.createElement("label")
+    restrictedLabel.innerText = "Restricted"
+
+    let privateInputDiv = document.createElement("div")
+    let privateInput = document.createElement("input");
+    privateInput.type = "radio"
+    privateInput.name = "communityType"
+    privateInput.value = "private"
+
+    let privateLabel = document.createElement("label")
+    privateLabel.innerText = "Private"
+
+
+    let popupFooter = document.createElement("div");
+    popupFooter.className = "popup-footer";
+    // let cancelButton = document.createElement("button")
+    // cancelButton.className = "selector";
+    // cancelButton.innerText = "Cancel";
+    // cancelButton.addEventListener("click",function(){
+    //     console.log("Canceling create a subreddit")
+    //     closePopup()
+    // })
+
+    let createButton = document.createElement("button");
+    // createButton.href = "/register";
+    createButton.innerText = "Create Subreddit";
+    createButton.className = "selector";
+    createButton.addEventListener("click",function(){
+        console.log("Creating subreddit")
+        socket.emit("create-subreddit",{"name":createdNameInput.value})
+        closePopup()
+    })
+
+    
+    popupHeader.append(closePopupButton)
+    popupBody.append(popupTitle)
+    popupBody.append(subredditNameInput)
+    // popupBody.append(passwordPopupInput) 
+    popupBody.append(subredditTypeDiv)
+    subredditNameInput.append(predefinedNameInput)
+    subredditNameInput.append(createdNameInput)
+    subredditTypeDiv.append(typeTitle)
+    subredditTypeDiv.append(publicInputDiv)
+    subredditTypeDiv.append(restrictedInputDiv)
+    subredditTypeDiv.append(privateInputDiv)
+    publicInputDiv.append(publicInput)
+    publicInputDiv.append(publicLabel)
+
+    restrictedInputDiv.append(restrictedInput)
+    restrictedInputDiv.append(restrictedLabel)
+
+    privateInputDiv.append(privateInput)
+    privateInputDiv.append(privateLabel)
+    
+    // popupFooter.append(cancelButton)
+    popupFooter.append(createButton)
+
+    popupDiv.append(popupHeader)
+    popupDiv.append(popupBody)
+    popupDiv.append(popupFooter)
 }
 
 

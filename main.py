@@ -21,6 +21,7 @@ client = MongoClient(mongodb_string)
 mydb = client["Personal_db"] #database in cluster
 post_table = mydb["Reddit-Post"] #table in database
 user_table = mydb["Reddit-Users"]
+subreddit_table = mydb["Reddit-subreddits"]
 
 
 def user_data(username):
@@ -186,7 +187,9 @@ def recent_post(): #queries the db to find the post with the biggest post-num id
 
 
 
-
+@socketio.on("create-subreddit")
+def create_subreddit(data):
+    print(data)
 
 
 @socketio.on("join_subreddit")
