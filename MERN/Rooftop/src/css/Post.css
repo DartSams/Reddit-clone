@@ -1,0 +1,28 @@
+.post-header {
+    width:100%;
+}
+
+.post-header .settings-button-container{
+    display: flex;
+    flex-direction: row;
+    float: right;
+}
+
+.post-header .settings-button-container #block{
+    display: block;
+    width: 5px;
+    height: 5px;
+    margin: 2px;
+    background-color: yellow;
+}
+
+.post-body{
+    max-height: 3%;
+    /* padding: 5px; */
+}
+
+.post-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
